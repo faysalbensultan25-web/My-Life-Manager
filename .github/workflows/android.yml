@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout source code
         uses: actions/checkout@v4
 
       - name: Setup Flutter
@@ -23,14 +23,26 @@ jobs:
         with:
           flutter-version: "3.29.3"
           channel: stable
+          cache: true
 
-      - name: Generate Android project files
-        run: flutter create --platforms=android --org com.faysal --project-name my_life_manager --overwrite .
+      - name: Preserve app source
+        run: |
+          cp lib/main.dart /tmp/main.dart
+          cp pubspec.yaml /tmp/pubspec.yaml
+
+      - name: Generate Android project
+        run: |
+          flutter create --platforms=android --org com.faysal --project-name my_life_manager --overwrite .
+
+      - name: Restore app source
+        run: |
+          cp /tmp/main.dart lib/main.dart
+          cp /tmp/pubspec.yaml pubspec.yaml
 
       - name: Get dependencies
         run: flutter pub get
 
-      - name: Build APK
+      - name: Build release APK
         run: flutter build apk --release
 
       - name: Upload APK
@@ -38,3 +50,5 @@ jobs:
         with:
           name: My-Life-Manager-APK
           path: build/app/outputs/flutter-apk/app-release.apk
+          if-no-files-found: error
+          retention-days: 7
