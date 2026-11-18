@@ -26,6 +26,11 @@ jobs:
           flutter-version: '3.24.0'
           cache: true
 
+      - name: Update Gradle Wrapper
+        uses: premex-ab/actions/update-gradle-wrapper@v1
+        with:
+          gradle-version: '8.7'
+
       - name: Get dependencies
         run: flutter pub get
 
