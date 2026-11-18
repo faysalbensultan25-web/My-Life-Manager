@@ -16,7 +16,7 @@ jobs:
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
-          distribution: 'zulu'
+          distribution: 'temurin'
           java-version: '17'
 
       - name: Set up Flutter
@@ -24,9 +24,16 @@ jobs:
         with:
           channel: 'stable'
           flutter-version: '3.24.0'
+          cache: true
 
       - name: Get dependencies
         run: flutter pub get
+
+      - name: Clean Gradle
+        run: |
+          cd android
+          ./gradlew clean
+          cd ..
 
       - name: Build APK
         run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
