@@ -26,16 +26,15 @@ jobs:
           flutter-version: '3.24.0'
           cache: true
 
-      - name: Update Gradle Wrapper
-        uses: premex-ab/actions/update-gradle-wrapper@v1
-        with:
-          gradle-version: '8.7'
+      # এই ধাপে আমরা হারিয়ে যাওয়া Gradle Wrapper তৈরি করব
+      - name: Generate Gradle Wrapper
+        run: |
+          cd android
+          gradle wrapper --gradle-version 8.7
+          cd ..
 
       - name: Get dependencies
         run: flutter pub get
-
-      - name: Clean Flutter
-        run: flutter clean
 
       - name: Build APK
         run: flutter build apk --release --target-platform android-arm,android-arm64,android-x64
