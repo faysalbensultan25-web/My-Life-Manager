@@ -43,19 +43,28 @@ class _CategoryManagerScreenState extends State<CategoryManagerScreen> {
           decoration: const InputDecoration(labelText: 'Category Name', hintText: 'e.g. Freelance, Rent'),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(context), 
+            child: const Text('Cancel')
+          ),
           ElevatedButton(
             onPressed: () async {
-              if (nameController.text.trim().isNotEmpty) {
+              String categoryName = nameController.text.trim();
+              if (categoryName.isNotEmpty) {
                 final newCat = CategoryModel(
-                  name: nameController.text.trim(),
+                  name: categoryName,
                   type: type,
                   iconCode: type == 'Income' ? '0xe148' : '0xe56c',
                   colorCode: type == 'Income' ? 0xFF42B72A : 0xFFFA383E,
                 );
                 await DatabaseHelper().insertCategory(newCat);
-                if (mounted) Navigator.pop(context);
-                _loadCategories(); // Refresh List
+                if (mounted) {
+                  Navigator.pop(context);
+                  _loadCategories();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('$categoryName added successfully'))
+                  );
+                }
               }
             },
             child: const Text('Add'),
