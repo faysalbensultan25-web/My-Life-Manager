@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
 import 'add_transaction_screen.dart';
+import 'todo_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -11,19 +12,23 @@ class MainNavigation extends StatefulWidget {
 
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
-
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const Center(child: Text("To-Do Screen Under Construction")),
-    const SizedBox(), 
-    const Center(child: Text("Stats Screen Under Construction")),
-    const Center(child: Text("More Screen Under Construction")),
-  ];
+  
+  // Home Screen রিফ্রেশ করার জন্য Key
+  final GlobalKey<HomeScreenState> _homeKey = GlobalKey<HomeScreenState>();
 
   @override
   Widget build(BuildContext context) {
+    // স্ক্রিন লিস্ট এখানে তৈরি করা হলো, যাতে Key কাজ করে
+    final List<Widget> screens = [
+      HomeScreen(key: _homeKey), 
+      const TodoScreen(), 
+      const SizedBox(), // Add Button (খালি)
+      const Center(child: Text("Stats Screen Under Construction")),
+      const Center(child: Text("More Screen Under Construction")),
+    ];
+
     return Scaffold(
-      body: _screens[_currentIndex],
+      body: screens[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
@@ -31,11 +36,13 @@ class _MainNavigationState extends State<MainNavigation> {
         unselectedItemColor: const Color(0xFF65676B),
         onTap: (index) {
           if (index == 2) {
+            // Add Transaction Page
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
             ).then((value) {
-              setState(() {});
+              // সেভ করে ফিরে আসলে Home Screen-কে রিফ্রেশ করতে বলবে
+              _homeKey.currentState?.loadData();
             });
             return;
           }
