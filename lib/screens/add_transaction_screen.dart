@@ -39,7 +39,9 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
 
   Future<void> _saveTransaction() async {
     if (_amountController.text.isEmpty || selectedCategory == null) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please enter amount and select category')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter amount and select category')),
+      );
       return;
     }
 
@@ -54,43 +56,83 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
     await DatabaseHelper().insertTransaction(transaction);
     
     if (mounted) {
-      Navigator.pop(context, true); // Close Bottom Sheet
+      Navigator.pop(context, true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom, left: 16, right: 16, top: 20),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom + 20, 
+        left: 16, 
+        right: 16, 
+        top: 20
+      ),
       child: SingleChildScrollView(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Center(
-              child: Container(width: 50, height: 5, decoration: BoxDecoration(color: Colors.grey[300], borderRadius: BorderRadius.circular(10))),
+              child: Container(
+                width: 50, 
+                height: 5, 
+                decoration: BoxDecoration(
+                  color: Colors.grey[300], 
+                  borderRadius: BorderRadius.circular(10)
+                )
+              ),
             ),
             const SizedBox(height: 20),
             Row(
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () { setState(() => isIncome = true); _loadCategories(); },
+                    onTap: () {
+                      setState(() => isIncome = true);
+                      _loadCategories();
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(color: isIncome ? const Color(0xFF42B72A) : Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-                      child: Center(child: Text('Income', style: TextStyle(color: isIncome ? Colors.white : Colors.black, fontWeight: FontWeight.bold))),
+                      decoration: BoxDecoration(
+                        color: isIncome ? const Color(0xFF42B72A) : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Income', 
+                          style: TextStyle(
+                            color: isIncome ? Colors.white : Colors.black, 
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      ),
                     ),
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () { setState(() => isIncome = false); _loadCategories(); },
+                    onTap: () {
+                      setState(() => isIncome = false);
+                      _loadCategories();
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(color: !isIncome ? const Color(0xFFFA383E) : Colors.grey[200], borderRadius: BorderRadius.circular(8)),
-                      child: Center(child: Text('Expense', style: TextStyle(color: !isIncome ? Colors.white : Colors.black, fontWeight: FontWeight.bold))),
+                      decoration: BoxDecoration(
+                        color: !isIncome ? const Color(0xFFFA383E) : Colors.grey[200],
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Center(
+                        child: Text(
+                          'Expense', 
+                          style: TextStyle(
+                            color: !isIncome ? Colors.white : Colors.black, 
+                            fontWeight: FontWeight.bold
+                          )
+                        )
+                      ),
                     ),
                   ),
                 ),
@@ -100,32 +142,56 @@ class _AddTransactionSheetState extends State<AddTransactionSheet> {
             TextField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
-              decoration: const InputDecoration(labelText: 'Amount', border: OutlineInputBorder(), prefixIcon: Icon(Icons.attach_money)),
+              decoration: const InputDecoration(
+                labelText: 'Amount', 
+                border: OutlineInputBorder(), 
+                prefixIcon: Icon(Icons.attach_money)
+              ),
             ),
             const SizedBox(height: 15),
             isLoadingCats 
               ? const Center(child: CircularProgressIndicator())
               : DropdownButtonFormField<CategoryModel>(
-                  decoration: const InputDecoration(labelText: 'Category', border: OutlineInputBorder(), prefixIcon: Icon(Icons.category)),
+                  decoration: const InputDecoration(
+                    labelText: 'Category', 
+                    border: OutlineInputBorder(), 
+                    prefixIcon: Icon(Icons.category)
+                  ),
                   value: selectedCategory,
-                  items: categories.map((cat) => DropdownMenuItem<CategoryModel>(value: cat, child: Text(cat.name))).toList(),
+                  items: categories.map((cat) => DropdownMenuItem<CategoryModel>(
+                    value: cat, 
+                    child: Text(cat.name)
+                  )).toList(),
                   onChanged: (newValue) => setState(() => selectedCategory = newValue),
                 ),
             const SizedBox(height: 15),
             InkWell(
               onTap: () async {
-                final pickedDate = await showDatePicker(context: context, initialDate: selectedDate, firstDate: DateTime(2000), lastDate: DateTime(2100));
+                final pickedDate = await showDatePicker(
+                  context: context, 
+                  initialDate: selectedDate, 
+                  firstDate: DateTime(2000), 
+                  lastDate: DateTime(2100)
+                );
                 if (pickedDate != null) setState(() => selectedDate = pickedDate);
               },
               child: InputDecorator(
-                decoration: const InputDecoration(labelText: 'Date', border: OutlineInputBorder(), prefixIcon: Icon(Icons.calendar_today)),
+                decoration: const InputDecoration(
+                  labelText: 'Date', 
+                  border: OutlineInputBorder(), 
+                  prefixIcon: Icon(Icons.calendar_today)
+                ),
                 child: Text(DateFormat('dd MMM yyyy').format(selectedDate)),
               ),
             ),
             const SizedBox(height: 15),
             TextField(
               controller: _noteController,
-              decoration: const InputDecoration(labelText: 'Note (Optional)', border: OutlineInputBorder(), prefixIcon: Icon(Icons.note)),
+              decoration: const InputDecoration(
+                labelText: 'Note (Optional)', 
+                border: OutlineInputBorder(), 
+                prefixIcon: Icon(Icons.note)
+              ),
             ),
             const SizedBox(height: 20),
             ElevatedButton(
