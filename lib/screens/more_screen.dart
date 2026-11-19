@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'note_screen.dart';
 import 'profile_screen.dart';
+import 'category_manager_screen.dart'; // <-- নতুন ইম্পোর্ট
 
 class MoreScreen extends StatelessWidget {
   const MoreScreen({super.key});
@@ -32,9 +33,7 @@ class MoreScreen extends StatelessWidget {
             context, 
             icon: Icons.category, 
             title: 'Category Manager', 
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Coming soon!')));
-            },
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const CategoryManagerScreen())).then((_) => (context as Element).markNeedsBuild()),
           ),
           _buildMenuTile(
             context, 
