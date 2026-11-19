@@ -24,19 +24,23 @@ class DatabaseHelper {
   }
 
   Future<void> _onCreate(Database db, int version) async {
+    // 1. Categories Table
     await db.execute('''CREATE TABLE categories(
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       name TEXT, type TEXT, iconCode TEXT, colorCode INTEGER)''');
 
+    // 2. Transactions Table
     await db.execute('''CREATE TABLE transactions(
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       amount REAL, type TEXT, categoryId INTEGER, date TEXT, note TEXT,
       FOREIGN KEY (categoryId) REFERENCES categories (id) ON DELETE CASCADE)''');
 
+    // 3. Tasks Table
     await db.execute('''CREATE TABLE tasks(
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       title TEXT, date TEXT, priority TEXT, isCompleted INTEGER)''');
 
+    // 4. Notes Table
     await db.execute('''CREATE TABLE notes(
       id INTEGER PRIMARY KEY AUTOINCREMENT, 
       title TEXT, description TEXT, date TEXT, imagePath TEXT)''');
@@ -51,6 +55,7 @@ class DatabaseHelper {
     await db.insert('categories', {'name': 'Transport', 'type': 'Expense', 'iconCode': '0xe530', 'colorCode': '0xFF65676B'});
   }
 
+  // --- TRANSACTIONS ---
   Future<int> insertTransaction(TransactionModel transaction) async {
     final db = await database;
     return await db.insert('transactions', transaction.toMap());
@@ -58,15 +63,17 @@ class DatabaseHelper {
 
   Future<List<TransactionModel>> getAllTransactions() async {
     final db = await database;
+    // Changed ORDER BY t.date DESC to ORDER BY t.id DESC so the newest comes first
     final List<Map<String, dynamic>> maps = await db.rawQuery('''
       SELECT t.*, c.name as categoryName, c.iconCode as categoryIcon 
       FROM transactions t
       LEFT JOIN categories c ON t.categoryId = c.id
-      ORDER BY t.date DESC
+      ORDER BY t.id DESC
     ''');
     return List.generate(maps.length, (i) => TransactionModel.fromMap(maps[i]));
   }
 
+  // --- TASKS ---
   Future<int> insertTask(TaskModel task) async {
     final db = await database;
     return await db.insert('tasks', task.toMap());
@@ -88,6 +95,7 @@ class DatabaseHelper {
     return await db.delete('tasks', where: 'id = ?', whereArgs: [id]);
   }
 
+  // --- NOTES ---
   Future<int> insertNote(NoteModel note) async {
     final db = await database;
     return await db.insert('notes', note.toMap());
@@ -99,6 +107,7 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => NoteModel.fromMap(maps[i]));
   }
 
+  // --- CATEGORIES ---
   Future<List<CategoryModel>> getCategories(String type) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('categories', where: 'type = ?', whereArgs: [type]);
