@@ -1,7 +1,6 @@
 name: my_life_manager
 description: A personal life management application.
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
@@ -21,6 +20,7 @@ dependencies:
   shared_preferences: ^2.2.2
   image_picker: ^1.0.7
   local_auth: ^2.1.8
+  share_plus: ^7.2.1  # <-- নতুন যোগ করা হলো
 
 dev_dependencies:
   flutter_test:
