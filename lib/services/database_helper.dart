@@ -45,13 +45,22 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
+    // Income Defaults
     await db.insert('categories', {'name': 'Salary', 'type': 'Income', 'iconCode': '0xe148', 'colorCode': '0xFF42B72A'});
-    await db.insert('categories', {'name': 'Business', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF1877F2'});
+    await db.insert('categories', {'name': 'Business', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
+    await db.insert('categories', {'name': 'Investment', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
+    await db.insert('categories', {'name': 'Gift', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
+    await db.insert('categories', {'name': 'Other Income', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
+
+    // Expense Defaults
     await db.insert('categories', {'name': 'Food', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
-    await db.insert('categories', {'name': 'Transport', 'type': 'Expense', 'iconCode': '0xe530', 'colorCode': '0xFF65676B'});
+    await db.insert('categories', {'name': 'Transport', 'type': 'Expense', 'iconCode': '0xe530', 'colorCode': '0xFFFA383E'});
+    await db.insert('categories', {'name': 'Shopping', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
+    await db.insert('categories', {'name': 'Bills', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
+    await db.insert('categories', {'name': 'Health', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
+    await db.insert('categories', {'name': 'Education', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
   }
 
-  // --- TRANSACTIONS ---
   Future<int> insertTransaction(TransactionModel transaction) async {
     final db = await database;
     return await db.insert('transactions', transaction.toMap());
@@ -68,7 +77,6 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => TransactionModel.fromMap(maps[i]));
   }
 
-  // --- TASKS ---
   Future<int> insertTask(TaskModel task) async {
     final db = await database;
     return await db.insert('tasks', task.toMap());
@@ -90,7 +98,6 @@ class DatabaseHelper {
     return await db.delete('tasks', where: 'id = ?', whereArgs: [id]);
   }
 
-  // --- NOTES ---
   Future<int> insertNote(NoteModel note) async {
     final db = await database;
     return await db.insert('notes', note.toMap());
@@ -102,7 +109,6 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => NoteModel.fromMap(maps[i]));
   }
 
-  // --- CATEGORIES & STATS ---
   Future<List<CategoryModel>> getCategories(String type) async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('categories', where: 'type = ?', whereArgs: [type], orderBy: 'id DESC');
@@ -116,23 +122,6 @@ class DatabaseHelper {
 
   Future<int> deleteCategory(int id) async {
     final db = await database;
-    // ডিলিট করার সময় ট্রানজেকশনগুলোও ডিলিট হবে ON DELETE CASCADE এর কারণে
     return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
-  }
-
-  Future<List<Map<String, dynamic>>> getMonthlyCategorySummary(String type) async {
-    final db = await database;
-    final now = DateTime.now();
-    final monthStr = now.month.toString().padLeft(2, '0');
-    final yearStr = now.year.toString();
-    final prefix = "$yearStr-$monthStr"; 
-
-    return await db.rawQuery('''
-      SELECT c.name as categoryName, SUM(t.amount) as totalAmount
-      FROM transactions t
-      JOIN categories c ON t.categoryId = c.id
-      WHERE t.type = ? AND t.date LIKE ?
-      GROUP BY c.name
-    ''', [type, '$prefix%']);
   }
 }
