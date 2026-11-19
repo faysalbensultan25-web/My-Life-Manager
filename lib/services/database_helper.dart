@@ -45,14 +45,12 @@ class DatabaseHelper {
   }
 
   Future<void> _insertDefaultCategories(Database db) async {
-    // Income Defaults
     await db.insert('categories', {'name': 'Salary', 'type': 'Income', 'iconCode': '0xe148', 'colorCode': '0xFF42B72A'});
     await db.insert('categories', {'name': 'Business', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
     await db.insert('categories', {'name': 'Investment', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
     await db.insert('categories', {'name': 'Gift', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
-    await db.insert('categories', {'name': 'Other Income', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
+    await db.insert('categories', {'name': 'Other', 'type': 'Income', 'iconCode': '0xe1a4', 'colorCode': '0xFF42B72A'});
 
-    // Expense Defaults
     await db.insert('categories', {'name': 'Food', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
     await db.insert('categories', {'name': 'Transport', 'type': 'Expense', 'iconCode': '0xe530', 'colorCode': '0xFFFA383E'});
     await db.insert('categories', {'name': 'Shopping', 'type': 'Expense', 'iconCode': '0xe56c', 'colorCode': '0xFFFA383E'});
