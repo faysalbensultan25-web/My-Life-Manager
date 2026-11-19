@@ -1,4 +1,3 @@
-
 name: my_life_manager
 description: A personal life management application.
 publish_to: 'none'
@@ -11,6 +10,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # Localization (বহুভাষিক সাপোর্টের জন্য)
+  flutter_localizations:
+    sdk: flutter
+  intl: any
+
+  # State Management (ডেটা আপডেটের জন্য)
+  provider: ^6.1.1
+
+  # Database (ডেটা সেভ করার জন্য)
+  sqflite: ^2.3.0
+  path: ^1.8.3
+
+  # UI & Charts (চার্ট ও ডিজাইনের জন্য)
+  fl_chart: ^0.66.0
+  google_fonts: ^6.1.0
+
+  # Utilities (অন্যান্য ফিচারের জন্য)
+  shared_preferences: ^2.2.2
+  image_picker: ^1.0.7
+  local_auth: ^2.1.8
 
 dev_dependencies:
   flutter_test:
