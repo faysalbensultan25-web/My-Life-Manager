@@ -39,13 +39,14 @@ class _CategoryManagerScreenState extends State<CategoryManagerScreen> {
         title: Text('Add $type Category'),
         content: TextField(
           controller: nameController,
-          decoration: const InputDecoration(labelText: 'Category Name'),
+          autofocus: true,
+          decoration: const InputDecoration(labelText: 'Category Name', hintText: 'e.g. Freelance, Rent'),
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
           ElevatedButton(
             onPressed: () async {
-              if (nameController.text.isNotEmpty) {
+              if (nameController.text.trim().isNotEmpty) {
                 final newCat = CategoryModel(
                   name: nameController.text.trim(),
                   type: type,
@@ -54,7 +55,7 @@ class _CategoryManagerScreenState extends State<CategoryManagerScreen> {
                 );
                 await DatabaseHelper().insertCategory(newCat);
                 if (mounted) Navigator.pop(context);
-                _loadCategories();
+                _loadCategories(); // Refresh List
               }
             },
             child: const Text('Add'),
@@ -80,10 +81,7 @@ class _CategoryManagerScreenState extends State<CategoryManagerScreen> {
           backgroundColor: const Color(0xFF1877F2),
           bottom: const TabBar(
             indicatorColor: Colors.white,
-            tabs: [
-              Tab(text: 'Income'),
-              Tab(text: 'Expense'),
-            ],
+            tabs: [Tab(text: 'Income'), Tab(text: 'Expense')],
           ),
         ),
         body: isLoading
@@ -121,10 +119,7 @@ class _CategoryManagerScreenState extends State<CategoryManagerScreen> {
               return Card(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 5),
                 child: ListTile(
-                  leading: Icon(
-                    Icons.category, 
-                    color: type == 'Income' ? const Color(0xFF42B72A) : const Color(0xFFFA383E)
-                  ),
+                  leading: Icon(Icons.category, color: type == 'Income' ? const Color(0xFF42B72A) : const Color(0xFFFA383E)),
                   title: Text(cat.name, style: const TextStyle(fontWeight: FontWeight.bold)),
                   trailing: IconButton(
                     icon: const Icon(Icons.delete, color: Colors.red),
