@@ -3,6 +3,7 @@ import 'home_screen.dart';
 import 'add_transaction_screen.dart';
 import 'todo_screen.dart';
 import 'history_screen.dart'; 
+import 'more_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -22,7 +23,7 @@ class _MainNavigationState extends State<MainNavigation> {
       const TodoScreen(), 
       const SizedBox(),
       const HistoryScreen(), 
-      const Center(child: Text("More Screen Under Construction")),
+      const MoreScreen(), 
     ];
 
     return Scaffold(
