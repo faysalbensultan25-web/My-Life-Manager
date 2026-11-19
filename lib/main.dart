@@ -24,16 +24,21 @@ class MyApp extends StatelessWidget {
         Locale('bn'), // Bangla
       ],
       theme: ThemeData(
-        primaryColor: const Color(0xFF1877F2),
-        scaffoldBackgroundColor: const Color(0xFFF0F2F5),
+        primaryColor: const Color(0xFF1877F2), // Facebook Blue
+        scaffoldBackgroundColor: const Color(0xFFF0F2F5), // Facebook Light Gray
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF1877F2),
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        fontFamily: 'Roboto', // বা আপনার পছন্দের ফন্ট
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          backgroundColor: Colors.white,
+          selectedItemColor: Color(0xFF1877F2),
+          unselectedItemColor: Color(0xFF65676B),
+        ),
+        fontFamily: 'Roboto',
       ),
-      home: const MainNavigation(), // এখানে মেইন নেভিগেশন সেট করা হলো
+      home: const MainNavigation(), // মেইন নেভিগেশন স্ক্রিন
     );
   }
 }
