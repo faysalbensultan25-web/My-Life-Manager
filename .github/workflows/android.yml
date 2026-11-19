@@ -25,24 +25,14 @@ jobs:
       - name: Generate Android Folder
         run: flutter create --platforms=android --project-name my_life_manager .
         
-      - name: Fix Kotlin Version
+      - name: Install FlutterFix
         run: |
-          sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "2.0.20"/g' android/settings.gradle
-          if grep -q "ext.kotlin_version" android/build.gradle; then
-            sed -i 's/ext.kotlin_version = .*/ext.kotlin_version = "2.0.20"/g' android/build.gradle
-          else
-            echo "ext.kotlin_version not found, skipping"
-          fi
+          dart pub global activate flutterfix
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
           
-      - name: Fix AAPT2 and CompileSdk
-        run: |
-          if grep -q "compileSdk" android/app/build.gradle; then
-            sed -i 's/compileSdk = .*/compileSdk = 34/g' android/app/build.gradle
-            sed -i 's/compileSdkVersion .*/compileSdkVersion 34/g' android/app/build.gradle
-          fi
-          sed -i 's/targetSdkVersion .*/targetSdkVersion 34/g' android/app/build.gradle
-          sed -i 's/targetSdk = .*/targetSdk = 34/g' android/app/build.gradle
-          
+      - name: Auto-fix Gradle, Kotlin, and SDK Versions
+        run: flutterfix sync
+        
       - name: Get dependencies
         run: flutter pub get
         
