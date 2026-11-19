@@ -11,25 +11,36 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-java@v4
         with:
           distribution: 'zulu'
           java-version: '17'
+          
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.24.0'
           channel: 'stable'
           
-      # এই লাইনটি মিসিং android ফোল্ডারটি অটোমেটিক তৈরি করে নেবে
+      # ১. অটোমেটিক android ফোল্ডার তৈরি (প্রজেক্টের নাম ঠিক করে)
       - name: Generate Android Folder
-        run: flutter create --platforms=android --project-name my_life_manager . 
+        run: flutter create --platforms=android --project-name my_life_manager .
         
+      # ২. Kotlin ভার্সন অটোমেটিক আপডেট করা (এরর দূর করার জন্য)
+      - name: Fix Kotlin Version
+        run: |
+          sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "1.9.22"/g' android/settings.gradle
+          sed -i 's/ext.kotlin_version = .*/ext.kotlin_version = "1.9.22"/g' android/build.gradle
+          
+      # ৩. প্যাকেজ ডাউনলোড
       - name: Get dependencies
         run: flutter pub get
         
+      # ৪. APK বিল্ড করা
       - name: Build APK
         run: flutter build apk --release
         
+      # ৫. APK আপলোড করা (v4 ব্যবহার করা হয়েছে)
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
