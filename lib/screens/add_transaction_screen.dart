@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../models/category_model.dart';
 import '../models/transaction_model.dart';
 import '../services/database_helper.dart';
-import 'package:intl/intl.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -14,13 +15,27 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   final _amountController = TextEditingController();
   final _noteController = TextEditingController();
   
-  bool isIncome = true; // Default Income
-  String? selectedCategory;
+  bool isIncome = true;
+  CategoryModel? selectedCategory;
   DateTime selectedDate = DateTime.now();
+  List<CategoryModel> categories = [];
+  bool isLoadingCats = true;
 
-  // Categories for Dropdown (We will fetch from DB later, for now hardcoded)
-  final List<String> incomeCategories = ['Salary', 'Business', 'Investment', 'Other'];
-  final List<String> expenseCategories = ['Food', 'Transport', 'Shopping', 'Bills', 'Health', 'Other'];
+  @override
+  void initState() {
+    super.initState();
+    _loadCategories();
+  }
+
+  Future<void> _loadCategories() async {
+    setState(() => isLoadingCats = true);
+    final cats = await DatabaseHelper().getCategories(isIncome ? 'Income' : 'Expense');
+    setState(() {
+      categories = cats;
+      selectedCategory = cats.isNotEmpty ? cats.first : null;
+      isLoadingCats = false;
+    });
+  }
 
   Future<void> _saveTransaction() async {
     if (_amountController.text.isEmpty || selectedCategory == null) {
@@ -33,7 +48,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     final transaction = TransactionModel(
       amount: double.parse(_amountController.text),
       type: isIncome ? 'Income' : 'Expense',
-      categoryId: 1, // Hardcoded for now, we will connect this to Category table later
+      categoryId: selectedCategory!.id!,
       date: DateFormat('yyyy-MM-dd').format(selectedDate),
       note: _noteController.text,
     );
@@ -41,7 +56,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     await DatabaseHelper().insertTransaction(transaction);
     
     if (mounted) {
-      Navigator.pop(context, true); // Return true to refresh home screen
+      Navigator.pop(context, true);
     }
   }
 
@@ -57,12 +72,14 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            // Income / Expense Toggle
             Row(
               children: [
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => isIncome = true),
+                    onTap: () {
+                      setState(() => isIncome = true);
+                      _loadCategories();
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
@@ -78,7 +95,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () => setState(() => isIncome = false),
+                    onTap: () {
+                      setState(() => isIncome = false);
+                      _loadCategories();
+                    },
                     child: Container(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       decoration: BoxDecoration(
@@ -94,8 +114,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ],
             ),
             const SizedBox(height: 20),
-
-            // Amount Input
             TextField(
               controller: _amountController,
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
@@ -106,28 +124,28 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: 15),
-
-            // Category Dropdown
-            DropdownButtonFormField<String>(
-              decoration: const InputDecoration(
-                labelText: 'Category',
-                border: OutlineInputBorder(),
-                prefixIcon: Icon(Icons.category),
-              ),
-              value: selectedCategory,
-              items: (isIncome ? incomeCategories : expenseCategories).map((String category) {
-                return DropdownMenuItem<String>(
-                  value: category,
-                  child: Text(category),
-                );
-              }).toList(),
-              onChanged: (newValue) {
-                setState(() => selectedCategory = newValue);
-              },
-            ),
+            
+            isLoadingCats 
+              ? const Center(child: CircularProgressIndicator())
+              : DropdownButtonFormField<CategoryModel>(
+                  decoration: const InputDecoration(
+                    labelText: 'Category',
+                    border: OutlineInputBorder(),
+                    prefixIcon: Icon(Icons.category),
+                  ),
+                  value: selectedCategory,
+                  items: categories.map((CategoryModel cat) {
+                    return DropdownMenuItem<CategoryModel>(
+                      value: cat,
+                      child: Text(cat.name),
+                    );
+                  }).toList(),
+                  onChanged: (newValue) {
+                    setState(() => selectedCategory = newValue);
+                  },
+                ),
+                
             const SizedBox(height: 15),
-
-            // Date Picker
             InkWell(
               onTap: () async {
                 final pickedDate = await showDatePicker(
@@ -150,8 +168,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: 15),
-
-            // Note Input
             TextField(
               controller: _noteController,
               decoration: const InputDecoration(
@@ -161,8 +177,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ),
             ),
             const SizedBox(height: 25),
-
-            // Save Button
             ElevatedButton(
               onPressed: _saveTransaction,
               style: ElevatedButton.styleFrom(
