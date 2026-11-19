@@ -22,7 +22,7 @@ jobs:
           
       # এই লাইনটি মিসিং android ফোল্ডারটি অটোমেটিক তৈরি করে নেবে
       - name: Generate Android Folder
-        run: flutter create --platforms=android .
+        run: flutter create --platforms=android --project-name my_life_manager . 
         
       - name: Get dependencies
         run: flutter pub get
