@@ -21,7 +21,9 @@ class _MainNavigationState extends State<MainNavigation> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20))
+      ),
       builder: (context) => const AddTransactionSheet(),
     ).then((_) {
       _homeKey.currentState?.loadData(); 
@@ -33,7 +35,7 @@ class _MainNavigationState extends State<MainNavigation> {
     final List<Widget> screens = [
       HomeScreen(key: _homeKey), 
       const TodoScreen(), 
-      const NoteScreen(), // Notes added directly to nav
+      const NoteScreen(), 
       const HistoryScreen(), 
       const MoreScreen(), 
     ];
@@ -43,7 +45,7 @@ class _MainNavigationState extends State<MainNavigation> {
         index: _currentIndex,
         children: screens,
       ),
-      floatingActionButton: (_currentIndex == 0 || _currentIndex == 3) // Show FAB only on Home and Stats
+      floatingActionButton: (_currentIndex == 0 || _currentIndex == 3) 
           ? FloatingActionButton(
               backgroundColor: const Color(0xFF1877F2),
               onPressed: _showAddTransactionSheet,
