@@ -13,13 +13,17 @@ class HistoryScreen extends StatefulWidget {
 class _HistoryScreenState extends State<HistoryScreen> {
   List<TransactionModel> allTransactions = [];
   List<TransactionModel> filteredTransactions = [];
-  String selectedFilter = 'All'; // All, Daily, Weekly, Monthly, Yearly
+  List<Map<String, dynamic>> monthlyIncome = [];
+  List<Map<String, dynamic>> monthlyExpense = [];
+  
+  String selectedFilter = 'All';
   bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     _loadData();
+    _loadMonthlyStats();
   }
 
   Future<void> _loadData() async {
@@ -29,6 +33,15 @@ class _HistoryScreenState extends State<HistoryScreen> {
       allTransactions = data;
       _applyFilter(selectedFilter);
       isLoading = false;
+    });
+  }
+
+  Future<void> _loadMonthlyStats() async {
+    final inc = await DatabaseHelper().getMonthlyCategorySummary('Income');
+    final exp = await DatabaseHelper().getMonthlyCategorySummary('Expense');
+    setState(() {
+      monthlyIncome = inc;
+      monthlyExpense = exp;
     });
   }
 
@@ -63,7 +76,6 @@ class _HistoryScreenState extends State<HistoryScreen> {
   Widget build(BuildContext context) {
     final currencyFormatter = NumberFormat.currency(locale: 'en_IN', symbol: '৳ ', decimalDigits: 0);
 
-    // Calculate totals for filtered list
     double totalInc = 0;
     double totalExp = 0;
     for (var t in filteredTransactions) {
@@ -79,53 +91,79 @@ class _HistoryScreenState extends State<HistoryScreen> {
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              children: [
-                // Filter Chips
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                  child: Row(
-                    children: ['All', 'Daily', 'Weekly', 'Monthly', 'Yearly'].map((f) {
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 8.0),
-                        child: ChoiceChip(
-                          label: Text(f),
-                          selected: selectedFilter == f,
-                          selectedColor: const Color(0xFF1877F2),
-                          labelStyle: TextStyle(color: selectedFilter == f ? Colors.white : Colors.black),
-                          onSelected: (val) => _applyFilter(f),
-                        ),
-                      );
-                    }).toList(),
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  // Filter Chips
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    child: Row(
+                      children: ['All', 'Daily', 'Weekly', 'Monthly', 'Yearly'].map((f) {
+                        return Padding(
+                          padding: const EdgeInsets.only(right: 8.0),
+                          child: ChoiceChip(
+                            label: Text(f),
+                            selected: selectedFilter == f,
+                            selectedColor: const Color(0xFF1877F2),
+                            labelStyle: TextStyle(color: selectedFilter == f ? Colors.white : Colors.black),
+                            onSelected: (val) => _applyFilter(f),
+                          ),
+                        );
+                      }).toList(),
+                    ),
                   ),
-                ),
 
-                // Summary Card
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 16),
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                  // Summary Card
+                  Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        _buildStatCol('Income', currencyFormatter.format(totalInc), const Color(0xFF42B72A)),
+                        Container(height: 30, width: 1, color: Colors.grey[300]),
+                        _buildStatCol('Expense', currencyFormatter.format(totalExp), const Color(0xFFFA383E)),
+                      ],
+                    ),
                   ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      _buildStatCol('Income', currencyFormatter.format(totalInc), const Color(0xFF42B72A)),
-                      Container(height: 30, width: 1, color: Colors.grey[300]),
-                      _buildStatCol('Expense', currencyFormatter.format(totalExp), const Color(0xFFFA383E)),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 10),
+                  const SizedBox(height: 10),
 
-                // List
-                Expanded(
-                  child: filteredTransactions.isEmpty
-                      ? const Center(child: Text('No transactions found', style: TextStyle(color: Colors.grey)))
+                  // Monthly Breakdown Section
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("This Month's Breakdown", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 10),
+                        if (monthlyExpense.isNotEmpty) ...[
+                          const Text("Expense by Category:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.red)),
+                          ...monthlyExpense.map((e) => Text("${e['categoryName']}: ${currencyFormatter.format(e['totalAmount'])}")).toList(),
+                          const SizedBox(height: 10),
+                        ],
+                        if (monthlyIncome.isNotEmpty) ...[
+                          const Text("Income by Category:", style: TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                          ...monthlyIncome.map((e) => Text("${e['categoryName']}: ${currencyFormatter.format(e['totalAmount'])}")).toList(),
+                        ],
+                      ],
+                    ),
+                  ),
+
+                  // List of Transactions
+                  filteredTransactions.isEmpty
+                      ? const Padding(
+                          padding: EdgeInsets.all(20.0),
+                          child: Text('No transactions found', style: TextStyle(color: Colors.grey)),
+                        )
                       : ListView.builder(
-                          padding: const EdgeInsets.all(16),
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           itemCount: filteredTransactions.length,
                           itemBuilder: (context, index) {
                             final t = filteredTransactions[index];
@@ -148,8 +186,9 @@ class _HistoryScreenState extends State<HistoryScreen> {
                             );
                           },
                         ),
-                ),
-              ],
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
     );
   }
