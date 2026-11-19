@@ -11,13 +11,12 @@ class MainNavigation extends StatefulWidget {
 class _MainNavigationState extends State<MainNavigation> {
   int _currentIndex = 0;
 
-  // এখানে আমরা পরবর্তীতে বাকি স্ক্রিনগুলো যোগ করব
   final List<Widget> _screens = [
     const HomeScreen(),
-    const Center(child: Text("To-Do Screen Coming Soon")),
-    const SizedBox(), // Add বাটনের জন্য ফাঁকা রাখা হলো
-    const Center(child: Text("Stats Screen Coming Soon")),
-    const Center(child: Text("More Screen Coming Soon")),
+    const Center(child: Text("To-Do Screen")),
+    const SizedBox(),
+    const Center(child: Text("Stats Screen")),
+    const Center(child: Text("More Screen")),
   ];
 
   @override
@@ -27,13 +26,10 @@ class _MainNavigationState extends State<MainNavigation> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: const Color(0xFF1877F2), // Facebook Blue
+        selectedItemColor: const Color(0xFF1877F2),
         unselectedItemColor: const Color(0xFF65676B),
         onTap: (index) {
-          if (index == 2) {
-            // মাঝখানের প্লাস বাটনে ক্লিক করলে যা হবে (পরবর্তীতে জানাবো)
-            return;
-          }
+          if (index == 2) return;
           setState(() {
             _currentIndex = index;
           });
