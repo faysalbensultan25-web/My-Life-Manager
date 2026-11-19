@@ -20,25 +20,20 @@ class MyApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: const [
-        Locale('en'), // English
-        Locale('bn'), // Bangla
+        Locale('en'),
+        Locale('bn'),
       ],
       theme: ThemeData(
-        primaryColor: const Color(0xFF1877F2), // Facebook Blue
-        scaffoldBackgroundColor: const Color(0xFFF0F2F5), // Facebook Light Gray
+        primaryColor: const Color(0xFF1877F2),
+        scaffoldBackgroundColor: const Color(0xFFF0F2F5),
         appBarTheme: const AppBarTheme(
           backgroundColor: Color(0xFF1877F2),
           foregroundColor: Colors.white,
           elevation: 0,
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Colors.white,
-          selectedItemColor: Color(0xFF1877F2),
-          unselectedItemColor: Color(0xFF65676B),
-        ),
         fontFamily: 'Roboto',
       ),
-      home: const MainNavigation(), // মেইন নেভিগেশন স্ক্রিন
+      home: const MainNavigation(),
     );
   }
 }
