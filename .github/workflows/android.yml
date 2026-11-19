@@ -25,14 +25,21 @@ jobs:
       - name: Generate Android Folder
         run: flutter create --platforms=android --project-name my_life_manager .
         
-      - name: Install FlutterFix
+      - name: Fix Kotlin Version (Bump to 2.0.20)
         run: |
-          dart pub global activate flutterfix
-          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          if [ -f android/settings.gradle ]; then
+            sed -i 's/id "org.jetbrains.kotlin.android" version "[^"]*"/id "org.jetbrains.kotlin.android" version "2.0.20"/g' android/settings.gradle
+          fi
+          if [ -f android/build.gradle ]; then
+            sed -i 's/ext.kotlin_version = .*/ext.kotlin_version = "2.0.20"/g' android/build.gradle
+          fi
           
-      - name: Auto-fix Gradle, Kotlin, and SDK Versions
-        run: flutterfix sync
-        
+      - name: Fix AAPT2 Resource Error (SDK 35)
+        run: |
+          if [ -f android/gradle.properties ]; then
+            echo "android.aapt2FromMavenOverride=$ANDROID_HOME/build-tools/35.0.0/aapt2" >> android/gradle.properties
+          fi
+          
       - name: Get dependencies
         run: flutter pub get
         
