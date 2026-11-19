@@ -7,10 +7,10 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  HomeScreenState createState() => HomeScreenState(); 
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class HomeScreenState extends State<HomeScreen> {
   double totalIncome = 0.0;
   double totalExpense = 0.0;
   double totalBalance = 0.0;
@@ -20,10 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> loadData() async {
     setState(() => isLoading = true);
     
     final transactions = await DatabaseHelper().getAllTransactions();
@@ -43,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
       totalIncome = income;
       totalExpense = expense;
       totalBalance = income - expense;
-      recentTransactions = transactions.take(5).toList(); // Last 5 transactions
+      recentTransactions = transactions.take(5).toList(); 
       isLoading = false;
     });
   }
@@ -67,14 +67,8 @@ class _HomeScreenState extends State<HomeScreen> {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: const [
-                Text(
-                  'Good Morning!',
-                  style: TextStyle(color: Colors.black54, fontSize: 12),
-                ),
-                Text(
-                  'Faysal Ben Sultan',
-                  style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
-                ),
+                Text('Good Morning!', style: TextStyle(color: Colors.black54, fontSize: 12)),
+                Text('Faysal Ben Sultan', style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold)),
               ],
             ),
           ],
@@ -82,14 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Colors.black54),
-            onPressed: _loadData, // Pull to refresh manually
+            onPressed: loadData, 
           )
         ],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              onRefresh: _loadData,
+              onRefresh: loadData,
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16.0),
