@@ -48,7 +48,7 @@ class HomeScreenState extends State<HomeScreen> {
       totalExpense = expense;
       totalBalance = income - expense;
       recentTransactions = transactions.take(3).toList(); 
-      recentTasks = tasks.where((t) => t.isCompleted == 0).take(2).toList(); // Only incomplete tasks
+      recentTasks = tasks.where((t) => t.isCompleted == 0).take(2).toList(); 
       recentNotes = notes.take(2).toList();
       isLoading = false;
     });
@@ -93,7 +93,6 @@ class HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Income/Expense Cards
                     Row(
                       children: [
                         Expanded(child: _buildSummaryCard(title: 'Income', amount: currencyFormatter.format(totalIncome), color: const Color(0xFF42B72A), icon: Icons.arrow_downward)),
@@ -103,7 +102,6 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 12),
                     
-                    // Balance Card
                     Container(
                       width: double.infinity,
                       padding: const EdgeInsets.all(20),
@@ -119,7 +117,6 @@ class HomeScreenState extends State<HomeScreen> {
                     ),
                     const SizedBox(height: 20),
 
-                    // Recent To-Dos
                     if (recentTasks.isNotEmpty) ...[
                       const Text("Upcoming Tasks", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
@@ -132,7 +129,6 @@ class HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 20),
                     ],
 
-                    // Recent Notes
                     if (recentNotes.isNotEmpty) ...[
                       const Text("Recent Notes", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 10),
@@ -146,7 +142,6 @@ class HomeScreenState extends State<HomeScreen> {
                       const SizedBox(height: 20),
                     ],
 
-                    // Recent Transactions
                     const Text("Recent Transactions", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 10),
                     if (recentTransactions.isEmpty)
