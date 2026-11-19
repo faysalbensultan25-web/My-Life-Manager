@@ -11,23 +11,23 @@ dependencies:
   flutter:
     sdk: flutter
 
-  # Localization (বহুভাষিক সাপোর্টের জন্য)
+  # Localization (বহুভাষিক সাপোর্টের জন্য - এটি আপনার বিল্ড এরর ঠিক করবে)
   flutter_localizations:
     sdk: flutter
   intl: any
 
-  # State Management (ডেটা আপডেটের জন্য)
+  # State Management
   provider: ^6.1.1
 
   # Database (ডেটা সেভ করার জন্য)
   sqflite: ^2.3.0
   path: ^1.8.3
 
-  # UI & Charts (চার্ট ও ডিজাইনের জন্য)
+  # UI, Charts & Fonts
   fl_chart: ^0.66.0
   google_fonts: ^6.1.0
 
-  # Utilities (অন্যান্য ফিচারের জন্য)
+  # Utilities
   shared_preferences: ^2.2.2
   image_picker: ^1.0.7
   local_auth: ^2.1.8
