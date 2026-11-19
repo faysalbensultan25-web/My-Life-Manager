@@ -105,11 +105,21 @@ class DatabaseHelper {
   // --- CATEGORIES & STATS ---
   Future<List<CategoryModel>> getCategories(String type) async {
     final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('categories', where: 'type = ?', whereArgs: [type]);
+    final List<Map<String, dynamic>> maps = await db.query('categories', where: 'type = ?', whereArgs: [type], orderBy: 'id DESC');
     return List.generate(maps.length, (i) => CategoryModel.fromMap(maps[i]));
   }
 
-  // মাসিক ক্যাটাগরি সামারি বের করার ফাংশন
+  Future<int> insertCategory(CategoryModel category) async {
+    final db = await database;
+    return await db.insert('categories', category.toMap());
+  }
+
+  Future<int> deleteCategory(int id) async {
+    final db = await database;
+    // ডিলিট করার সময় ট্রানজেকশনগুলোও ডিলিট হবে ON DELETE CASCADE এর কারণে
+    return await db.delete('categories', where: 'id = ?', whereArgs: [id]);
+  }
+
   Future<List<Map<String, dynamic>>> getMonthlyCategorySummary(String type) async {
     final db = await database;
     final now = DateTime.now();
