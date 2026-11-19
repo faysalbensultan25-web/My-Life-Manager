@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
+import 'add_transaction_screen.dart';
 
 class MainNavigation extends StatefulWidget {
   const MainNavigation({super.key});
@@ -13,10 +14,10 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const Center(child: Text("To-Do Screen")),
-    const SizedBox(),
-    const Center(child: Text("Stats Screen")),
-    const Center(child: Text("More Screen")),
+    const Center(child: Text("To-Do Screen Under Construction")),
+    const SizedBox(), 
+    const Center(child: Text("Stats Screen Under Construction")),
+    const Center(child: Text("More Screen Under Construction")),
   ];
 
   @override
@@ -29,7 +30,15 @@ class _MainNavigationState extends State<MainNavigation> {
         selectedItemColor: const Color(0xFF1877F2),
         unselectedItemColor: const Color(0xFF65676B),
         onTap: (index) {
-          if (index == 2) return;
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const AddTransactionScreen()),
+            ).then((value) {
+              setState(() {});
+            });
+            return;
+          }
           setState(() {
             _currentIndex = index;
           });
